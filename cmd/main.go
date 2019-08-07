@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/valyala/fasthttp"
 
 	"github.com/dynastiateam/backend"
@@ -14,7 +15,7 @@ import (
 	"github.com/dynastiateam/backend/router"
 )
 
-//todo gracefull shytdown
+//todo gracefull shutdown
 //todo loggin middleware
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 		log.Fatal("unable to load env file")
 	}
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+	db, err := sql.Open("postgres", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASS"),
 		os.Getenv("DB_HOST"),

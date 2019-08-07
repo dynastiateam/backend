@@ -29,7 +29,7 @@ func New(repo repository.Repository) Service {
 }
 
 func (s *service) AddRequest(req *repository.Request) (*repository.Request, error) {
-	if err := validator.New().Struct(&req); err != nil {
+	if err := validator.New().Struct(req); err != nil {
 		return nil, err
 	}
 
