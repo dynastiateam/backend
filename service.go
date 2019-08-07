@@ -1,8 +1,6 @@
 package backend
 
 import (
-	"time"
-
 	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/dynastiateam/backend/repository"
@@ -23,14 +21,6 @@ const (
 	EventRejected         //rejected by guard
 	EventMissed           //wasn't completed before ETA
 )
-
-type Request struct {
-	ID     int       `json:"id"`
-	UserID int       `json:"user_id" validate:"required"`
-	Type   int       `json:"type" validate:"required"`
-	ETA    time.Time `json:"eta" validate:"required"`
-	Status int       `json:"status"`
-}
 
 func New(repo repository.Repository) Service {
 	return &service{
