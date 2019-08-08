@@ -1,0 +1,22 @@
+sudo: false
+language: go
+
+services:
+  - docker
+
+go:
+  - 1.12.7
+
+before_install:
+  - docker pull golang:1.12.7-alpine3.10
+#  - go get -v github.com/axw/gocov/gocov
+#  - go get -v github.com/mattn/goveralls
+
+install:
+  - make deps
+  - make test
+#  - go test -v -covermode=count -coverprofile=coverage.out ./...
+#  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
+
+script:
+  - make dockerise
