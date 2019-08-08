@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/valyala/fasthttp"
 
@@ -19,10 +18,6 @@ import (
 //todo loggin middleware
 
 func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("unable to load env file")
-	}
-
 	db, err := sql.Open("postgres", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASS"),

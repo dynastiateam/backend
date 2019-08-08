@@ -11,9 +11,9 @@ import (
 	"github.com/dynastiateam/backend"
 )
 
-var mid = func(ctx *fasthttp.RequestCtx, next fasthttp.RequestHandler) fasthttp.RequestHandler {
-	return next
-}
+//var mid = func(ctx *fasthttp.RequestCtx, next fasthttp.RequestHandler) fasthttp.RequestHandler {
+//	return next
+//}
 
 func New(svc backend.Service) *fasthttprouter.Router {
 	router := fasthttprouter.New()
