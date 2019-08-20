@@ -16,7 +16,7 @@ install:
   - make deps
   - make test
 #  - go test -v -covermode=count -coverprofile=coverage.out ./...
-#  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
+#  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -services=travis-ci
 
 script:
   - make dockerise

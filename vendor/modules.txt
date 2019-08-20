@@ -1,0 +1,29 @@
+# github.com/buaazp/fasthttprouter v0.1.1
+github.com/buaazp/fasthttprouter
+# github.com/go-playground/locales v0.12.1
+github.com/go-playground/locales
+github.com/go-playground/locales/currency
+# github.com/go-playground/universal-translator v0.16.0
+github.com/go-playground/universal-translator
+# github.com/joho/godotenv v1.3.0
+github.com/joho/godotenv
+# github.com/klauspost/compress v1.7.5
+github.com/klauspost/compress/flate
+github.com/klauspost/compress/gzip
+github.com/klauspost/compress/zlib
+# github.com/klauspost/cpuid v1.2.1
+github.com/klauspost/cpuid
+# github.com/leodido/go-urn v1.1.0
+github.com/leodido/go-urn
+# github.com/lib/pq v1.2.0
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/valyala/bytebufferpool v1.0.0
+github.com/valyala/bytebufferpool
+# github.com/valyala/fasthttp v1.4.0
+github.com/valyala/fasthttp
+github.com/valyala/fasthttp/fasthttputil
+github.com/valyala/fasthttp/stackless
+# gopkg.in/go-playground/validator.v9 v9.29.1
+gopkg.in/go-playground/validator.v9

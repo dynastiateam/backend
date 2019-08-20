@@ -1,31 +1,27 @@
 package repository
 
 import (
-	"database/sql"
+	"github.com/jinzhu/gorm"
 )
 
 type Repository interface {
-	AddRequest(req *Request) (*Request, error)
+	UserRepository
 }
 
 type repository struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
-type Request struct {
-	ID     int `json:"id"`
-	UserID int `json:"user_id" validate:"required"`
-	Type   int `json:"type" validate:"required"`
-	ETA    int `json:"eta" validate:"required"`
-	Status int `json:"status"`
-}
+//type Request struct {
+//	ID     int `json:"id"`
+//	UserID int `json:"user_id" validate:"required"`
+//	Type   int `json:"type" validate:"required"`
+//	ETA    int `json:"eta" validate:"required"`
+//	Status int `json:"status"`
+//}
 
-func New(db *sql.DB) Repository {
+func New(db *gorm.DB) Repository {
 	return &repository{
 		db: db,
 	}
-}
-
-func (r *repository) AddRequest(req *Request) (*Request, error) {
-	return req, nil
 }

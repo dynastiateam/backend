@@ -5,8 +5,8 @@ services:
     image: postgres:10.2
     command: postgres -c log_statement=all
     volumes:
-      - "./.data/db:/var/lib/postgresql"
-      - "./schema.sql:/schema.sql"
+      - "./schema.sql:/docker-entrypoint-initdb.d/1-schema.sql"
+      - "./.data/db:/var/lib/postgresql/data"
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"

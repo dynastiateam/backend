@@ -1,15 +1,19 @@
--- create database if not exists testms;
---
--- use testms;
---
--- create table ports
--- (
---   id      varchar(5)   not null,
---   name    varchar(30)  not null,
---   city    varchar(100) not null,
---   country varchar(100) not null,
---   lat     float        not null,
---   lng     float        not null,
---   constraint ports_id_uindex
---     unique (id)
--- );
+create table if not exists "user"
+(
+    id           serial
+        constraint user_pk
+            unique,
+    appartment   int,
+    email        varchar,
+    password     varchar,
+    phone        varchar,
+    first_name   varchar,
+    last_name    varchar,
+    role         varchar,
+    residence_id int,
+    building_id  int
+);
+
+create index user_email_index
+    on "user" (email);
+

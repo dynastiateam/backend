@@ -26,7 +26,7 @@ RUN apk add --no-cache ca-certificates
 COPY --from=builder /go/bin/svc /svc/
 WORKDIR /svc
 
-# Port on which the service will be exposed.
+# Port on which the services will be exposed.
 EXPOSE 8080
 EXPOSE 8888
 

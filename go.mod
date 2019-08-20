@@ -3,7 +3,7 @@ module github.com/dynastiateam/backend
 go 1.12
 
 require (
-	cloud.google.com/go v0.43.0 // indirect
+	cloud.google.com/go v0.44.3 // indirect
 	github.com/OpenPeeDeeP/depguard v1.0.0 // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/buaazp/fasthttprouter v0.1.1
@@ -11,6 +11,7 @@ require (
 	github.com/coreos/etcd v3.3.13+incompatible // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190806190131-db2462fef53b // indirect
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/go-critic/go-critic v0.3.4 // indirect
 	github.com/go-kit/kit v0.9.0 // indirect
@@ -31,6 +32,7 @@ require (
 	github.com/gostaticanalysis/analysisutil v0.0.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.9.5 // indirect
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
+	github.com/jinzhu/gorm v1.9.10
 	github.com/joho/godotenv v1.3.0
 	github.com/kisielk/errcheck v1.2.0 // indirect
 	github.com/klauspost/compress v1.7.5 // indirect
@@ -42,6 +44,7 @@ require (
 	github.com/logrusorgru/aurora v0.0.0-20190803045625-94edacc10f9b // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
+	github.com/mattn/go-sqlite3 v1.11.0 // indirect
 	github.com/mitchellh/go-ps v0.0.0-20190716172923-621e5597135b // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
@@ -51,7 +54,7 @@ require (
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.1.0 // indirect
 	github.com/rogpeppe/fastuuid v1.2.0 // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible // indirect
@@ -69,12 +72,12 @@ require (
 	github.com/valyala/fasthttp v1.4.0
 	go.etcd.io/bbolt v1.3.3 // indirect
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
-	golang.org/x/mobile v0.0.0-20190806162312-597adff16ade // indirect
-	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80 // indirect
-	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa // indirect
-	golang.org/x/tools v0.0.0-20190807223507-b346f7fd45de // indirect
-	google.golang.org/genproto v0.0.0-20190801165951-fa694d86fc64 // indirect
-	google.golang.org/grpc v1.22.1 // indirect
+	golang.org/x/mobile v0.0.0-20190814143026-e8b3e6111d02 // indirect
+	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
+	golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a // indirect
+	golang.org/x/tools v0.0.0-20190820033707-85edb9ef3283 // indirect
+	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55 // indirect
+	google.golang.org/grpc v1.23.0 // indirect
 	gopkg.in/go-playground/validator.v9 v9.29.1
 	honnef.co/go/tools v0.0.1-2019.2.2 // indirect
 	mvdan.cc/unparam v0.0.0-20190720180237-d51796306d8f // indirect

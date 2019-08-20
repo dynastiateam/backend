@@ -1,34 +1,35 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
-	_ "github.com/lib/pq"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/valyala/fasthttp"
 
-	"github.com/dynastiateam/backend"
 	"github.com/dynastiateam/backend/repository"
 	"github.com/dynastiateam/backend/router"
+	"github.com/dynastiateam/backend/services/user"
 )
 
+//todo logging middleware
 //todo gracefull shutdown
-//todo loggin middleware
 
 func main() {
-	db, err := sql.Open("postgres", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASS"),
+	db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
-		os.Getenv("DB_SCHEMA")))
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASS"),
+		os.Getenv("DB_SCHEMA"),
+		os.Getenv("DB_SSL")))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	router := router.New(backend.New(repository.New(db)))
+	router := router.New(user.New(repository.New(db)))
 
 	go func() {
 		if err := fasthttp.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("HTTP_PORT")), router.Handler); err != nil {
