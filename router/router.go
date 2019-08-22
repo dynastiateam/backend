@@ -3,7 +3,6 @@ package router
 import (
 	"encoding/json"
 
-	"github.com/dynastiateam/backend/models"
 	"github.com/dynastiateam/backend/services/user"
 
 	"github.com/buaazp/fasthttprouter"
@@ -16,32 +15,14 @@ type Router interface {
 
 type router struct {
 	*fasthttprouter.Router
+	userService user.Service
 }
 
-//var AuthMiddleware = func(ctx *fasthttp.RequestCtx, next fasthttp.RequestHandler) fasthttp.RequestHandler {
-//	return next
-//}
-
 func New(userSvc user.Service) Router {
-	r := router{fasthttprouter.New()}
+	r := router{fasthttprouter.New(), userSvc}
 
-	r.POST("/api/v1/auth/register", func(ctx *fasthttp.RequestCtx) {
-		var u models.User
-		if err := json.Unmarshal(ctx.PostBody(), &u); err != nil {
-			ctx.Logger().Printf("%s", err)
-			ctx.Error(err.Error(), fasthttp.StatusBadRequest)
-			return
-		}
-
-		res, err := userSvc.Create(&u)
-		if err != nil {
-			ctx.Logger().Printf("%s", err)
-			ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
-			return
-		}
-
-		r.response(ctx, res)
-	})
+	r.POST("/api/v1/auth/register", r.register)
+	r.POST("/api/v1/auth/login", r.login)
 
 	//////////////////////////////////////////
 
@@ -95,6 +76,22 @@ func New(userSvc user.Service) Router {
 	//})
 
 	return r
+}
+
+func (*router) auth(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+		//// Get the Basic Authentication credentials
+		//user, password, hasAuth := basicAuth(ctx)
+		//
+		//if hasAuth && user == requiredUser && password == requiredPassword {
+		//	// Delegate request to the given handle
+		//	h(ctx)
+		//	return
+		//}
+		//// Request Basic Authentication otherwise
+		//ctx.Error(fasthttp.StatusMessage(fasthttp.StatusUnauthorized), fasthttp.StatusUnauthorized)
+		//ctx.Response.Header.Set("WWW-Authenticate", "Basic realm=Restricted")
+	})
 }
 
 func (*router) response(ctx *fasthttp.RequestCtx, result interface{}) {

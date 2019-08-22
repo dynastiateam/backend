@@ -71,7 +71,7 @@ require (
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/valyala/fasthttp v1.4.0
 	go.etcd.io/bbolt v1.3.3 // indirect
-	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
+	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/mobile v0.0.0-20190814143026-e8b3e6111d02 // indirect
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
 	golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a // indirect

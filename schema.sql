@@ -3,7 +3,7 @@ create table if not exists "user"
     id           serial
         constraint user_pk
             unique,
-    appartment   int,
+    apartment   int,
     email        varchar,
     password     varchar,
     phone        varchar,
