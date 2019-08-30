@@ -2,37 +2,85 @@ package router
 
 import (
 	"encoding/json"
+	"net/http"
+	"os"
 
-	"github.com/valyala/fasthttp"
+	"github.com/dgrijalva/jwt-go"
+	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/dynastiateam/backend/models"
 )
 
-func (r *router) register(ctx *fasthttp.RequestCtx) {
-	var u models.User
-	if err := json.Unmarshal(ctx.PostBody(), &u); err != nil {
-		ctx.Logger().Printf("%s", err)
-		ctx.Error(err.Error(), fasthttp.StatusBadRequest)
-		return
-	}
-
-	res, err := r.userService.Create(&u)
-	if err != nil {
-		ctx.Logger().Printf("%s", err)
-		ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
-		return
-	}
-
-	r.response(ctx, res)
+type userRegisterRequest struct {
+	Apartment  int    `json:"apartment,omitempty" validate:"required"`
+	Email      string `json:"email,omitempty" validate:"required,email"`
+	Password   string `json:"password,omitempty" validate:"required"`
+	Phone      string `json:"phone,omitempty" validate:"required"`
+	FirstName  string `json:"first_name,omitempty" validate:"required"`
+	LastName   string `json:"last_name,omitempty" validate:"required"`
+	BuildingID int    `json:"building_id,omitempty" validate:"required"`
 }
 
-func (r *router) login(ctx *fasthttp.RequestCtx) {
-	var u models.User
-	if err := json.Unmarshal(ctx.PostBody(), &u); err != nil {
-		ctx.Logger().Printf("%s", err)
-		ctx.Error(err.Error(), fasthttp.StatusBadRequest)
+type loginRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
+func (rr *router) register(w http.ResponseWriter, r *http.Request) {
+	var req userRegisterRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		rr.errorResponse(w, err)
 		return
 	}
+
+	if err := validator.New().Struct(&req); err != nil {
+		rr.errorResponse(w, err)
+		return
+	}
+
+	u := models.User{
+		Apartment:   req.Apartment,
+		Email:       req.Email,
+		Phone:       req.Phone,
+		FirstName:   req.FirstName,
+		LastName:    req.LastName,
+		BuildingID:  req.BuildingID,
+		RawPassword: req.Password,
+	}
+
+	res, err := rr.userService.Create(&u)
+	if err != nil {
+		rr.errorResponse(w, err)
+		return
+	}
+
+	rr.response(w, res)
+}
+
+func (rr *router) login(w http.ResponseWriter, r *http.Request) {
+	var req loginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		rr.errorResponse(w, err)
+		return
+	}
+
+	if err := validator.New().Struct(&req); err != nil {
+		rr.errorResponse(w, err)
+		return
+	}
+
+	res, err := rr.userService.Login(req.Email, req.Password)
+	if err != nil {
+		rr.errorResponse(w, err)
+		return
+	}
+
+	tk := &models.Token{ID: res.ID}
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
+	tokenString, _ := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	res.Token = tokenString
+
+	rr.response(w, res)
 }
 
 //var AuthMiddleware = func(ctx *fasthttp.RequestCtx, next fasthttp.RequestHandler) fasthttp.RequestHandler {

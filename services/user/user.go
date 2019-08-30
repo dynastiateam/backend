@@ -1,7 +1,10 @@
 package user
 
 import (
+	"log"
+
 	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/dynastiateam/backend/models"
 	"github.com/dynastiateam/backend/repository"
@@ -9,6 +12,7 @@ import (
 
 type Service interface {
 	Create(user *models.User) (*models.User, error)
+	Login(email, password string) (*models.User, error)
 }
 
 type service struct {
@@ -21,14 +25,24 @@ func New(repo repository.Repository) Service {
 	}
 }
 
-func (s *service) GetUserByEmailAndPassword(email, password string) (*models.User, error) {
-	return nil, nil
+func (s *service) Login(email, password string) (*models.User, error) {
+	user, err := s.repo.UserByEmail(email)
+	if err != nil {
+		return nil, errors.Wrap(err, "error on login user")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
+		return nil, errors.New("Invalid login credentials. Please try again")
+	}
+	user.Password = ""
+
+	return user, nil
 }
 
 func (s *service) Create(user *models.User) (*models.User, error) {
-	if user.Email == "" || user.RawPassword == "" || user.Apartment == 0 || user.FirstName == "" || user.LastName == "" {
-		return nil, errors.New("fields: email, password, apartment, first_name, last_name are mandatory")
-	}
+	user.Password = hashAndSalt(user.RawPassword)
+	user.RawPassword = ""
 
 	u, err := s.repo.CreateUser(user)
 	if err != nil {
@@ -36,4 +50,12 @@ func (s *service) Create(user *models.User) (*models.User, error) {
 	}
 
 	return u, nil
+}
+
+func hashAndSalt(pwd string) string {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.MinCost)
+	if err != nil {
+		log.Println(err)
+	}
+	return string(hash)
 }

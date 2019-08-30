@@ -1,25 +1,29 @@
 package models
 
+import "github.com/dgrijalva/jwt-go"
+
 type User struct {
 	ID          int    `json:"id"`
 	Apartment   int    `json:"apartment,omitempty"`
 	Email       string `json:"email,omitempty"`
 	RawPassword string `json:"password,omitempty" gorm:"-"`
-	password    string `json:"-"`
+	Password    string `json:"-"`
 	Phone       string `json:"phone,omitempty"`
 	FirstName   string `json:"first_name,omitempty"`
 	LastName    string `json:"last_name,omitempty"`
 	Role        string `json:"role,omitempty"`
 	ResidenceID int    `json:"residence_id,omitempty"`
 	BuildingID  int    `json:"building_id,omitempty"`
-}
-
-func (u *User) SetPassword(p string) {
-	u.password = p
+	Token       string `json:"token" gorm:"-"`
 }
 
 func (User) TableName() string {
 	return "user"
+}
+
+type Token struct {
+	ID int
+	jwt.StandardClaims
 }
 
 //type Residence struct {
