@@ -3,40 +3,44 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
-	"os"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 
-	"github.com/dynastiateam/backend/repository"
+	"github.com/dynastiateam/backend/config"
+	"github.com/dynastiateam/backend/logging"
 	"github.com/dynastiateam/backend/router"
+	"github.com/dynastiateam/backend/services/auth"
 	"github.com/dynastiateam/backend/services/user"
 )
 
-//todo add correct http codes
-//todo change os.Getenv to config injection
-//todo logging middleware
 //todo gracefull shutdown
 
 func main() {
-	log.SetFlags(log.LstdFlags | log.Llongfile)
-
-	db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASS"),
-		os.Getenv("DB_SCHEMA"),
-		os.Getenv("DB_SSL")))
+	cfg, err := config.New()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 
-	router := router.New(user.New(repository.New(db)))
+	log := logging.NewLogger(cfg.Debug)
 
-	fmt.Println("Started HTTP server on " + os.Getenv("HTTP_PORT"))
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("HTTP_PORT")), router); err != nil {
-		log.Fatalf("error in ListenAndServe: %s", err)
+	db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		cfg.DB.Host, cfg.DB.Port, cfg.DB.User, cfg.DB.Password, cfg.DB.Database, cfg.DB.SSL))
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+
+	userService := user.NewService(log, db)
+	userHandler := user.NewHandler(log, userService)
+
+	authService := auth.NewService(log, db, userService, cfg.JWTSecret)
+	authHandler := auth.NewHandler(log, authService)
+
+	r := router.New(cfg.JWTSecret, cfg.HTTPPort, log, userHandler.Routes(), authHandler.Routes())
+
+	log.Info().Msg(fmt.Sprintf("Started HTTP server on %s @ %s", cfg.HTTPPort, time.Now().Format("02/01/2006 15:04:05")))
+	if err := r.ListenAndServe(); err != nil {
+		log.Fatal().Err(err)
 	}
 }

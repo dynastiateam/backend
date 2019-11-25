@@ -1,5 +1,7 @@
 ## TODO
 
+https://github.com/adigunhammedolalekan/go-contacts/blob/master/app/auth.go
+https://gist.github.com/zmts/802dc9c3510d79fd40f9dc38a12bccfc
 ### Actors
 - admin: user with admin access to system
 - service company: service company employee
@@ -7,22 +9,22 @@
 - neighbor: authorized inhabitant
 
 ### Auth
-- POST /login - auth in app
-- GET /logout - logout from app
+- [x] POST /login - auth in app
+- [ ] GET /logout - logout from app
 
 ### Requests
-- POST /request - save request from neighbor
-- GET /requests - get requests list (should support filtering and pagination)
-- GET /request/{id} - get request data
-- PUT /request/{id} - edit request
-- DELETE /request/id - delete request
+- [ ] POST /request - save request from neighbor
+- [ ] GET /requests - get requests list (should support filtering and pagination)
+- [ ] GET /request/{id} - get request data
+- [ ] PUT /request/{id} - edit request
+- [ ] DELETE /request/id - delete request
 
 ### Users
-- POST /user - create user
-- GET /user/{id} - get user data
-- GET /users - get users list (should support filtering and pagination)
-- PUT /user/{id} - update user data
-- DELETE /user/{id} - delete user
+- [x] POST /user - create user
+- [ ] GET /user/{id} - get user data
+- [ ] GET /users - get users list (should support filtering and pagination)
+- [ ] PUT /user/{id} - update user data
+- [ ] DELETE /user/{id} - delete user
 
 ### Tasks
 1. app should be able to authorize user  

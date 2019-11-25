@@ -1,25 +1,46 @@
-create table if not exists "user"
+create table if not exists users
 (
-    id           serial not null
+    id            serial not null
         constraint user_pk
             unique,
-    apartment    integer,
-    email        varchar,
-    password     varchar,
-    phone        varchar,
-    first_name   varchar,
-    last_name    varchar,
-    role         varchar,
-    residence_id integer,
-    building_id  integer
+    apartment     integer,
+    email         varchar,
+    password      varchar,
+    phone         varchar,
+    first_name    varchar,
+    last_name     varchar,
+    role          integer default 4
+        constraint user_user_roles_id_fk
+            references user_roles
+            on update cascade on delete set null,
+    residence_id  integer,
+    building_id   integer
         constraint user_buildings_id_fk
             references buildings (id)
-            on delete cascade
+            on delete cascade,
+    refresh_token varchar
 );
 
-create index if not exists user_email_index
-    on "user" (email);
+alter table users
+    owner to postgres;
 
+create index if not exists user_email_index
+    on users (email);
+
+create table user_roles
+(
+    id     serial
+        constraint user_roles_pk
+            primary key,
+    name   varchar,
+    parent int
+);
+
+insert into user_roles (id, name, parent)
+values (1, 'admin'),
+       (2, 'service', 1),
+       (3, 'guard', 2),
+       (4, 'neighbor', 1);
 
 create table if not exists buildings
 (

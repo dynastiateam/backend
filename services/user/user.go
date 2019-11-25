@@ -1,61 +1,92 @@
 package user
 
 import (
-	"log"
+	"errors"
 
-	"github.com/pkg/errors"
+	"github.com/jinzhu/gorm"
+	"github.com/rs/zerolog"
 	"golang.org/x/crypto/bcrypt"
+)
 
-	"github.com/dynastiateam/backend/models"
-	"github.com/dynastiateam/backend/repository"
+const defaultUserRole = 4
+
+var (
+	errUserNotFound       = errors.New("user not found")
+	errUserEmailExists    = errors.New("user with this email already exists")
+	errInvalidCredentials = errors.New("invalid login credentials")
 )
 
 type Service interface {
-	Create(user *models.User) (*models.User, error)
-	Login(email, password string) (*models.User, error)
+	Create(request userRegisterRequest) (int, error)
+	UserByEmailAndPassword(email, password string) (*User, error)
 }
 
 type service struct {
-	repo repository.Repository
+	log  *zerolog.Logger
+	repo Repository
 }
 
-func New(repo repository.Repository) Service {
+type User struct {
+	ID          int    `json:"id"`
+	Apartment   int    `json:"apartment,omitempty"`
+	Email       string `json:"email,omitempty"`
+	Password    string `json:"password,omitempty"`
+	Phone       string `json:"phone,omitempty"`
+	FirstName   string `json:"first_name,omitempty"`
+	LastName    string `json:"last_name,omitempty"`
+	Role        int    `json:"role,omitempty"`
+	ResidenceID int    `json:"residence_id,omitempty"`
+	BuildingID  int    `json:"building_id,omitempty"`
+}
+
+func NewService(log *zerolog.Logger, db *gorm.DB) Service {
 	return &service{
-		repo: repo,
+		repo: newRepo(db),
+		log:  log,
 	}
 }
 
-func (s *service) Login(email, password string) (*models.User, error) {
-	user, err := s.repo.UserByEmail(email)
+func (s *service) Create(r userRegisterRequest) (int, error) {
+	u := User{
+		Apartment:  r.Apartment,
+		BuildingID: r.BuildingID,
+		Email:      r.Email,
+		Phone:      r.Phone,
+		FirstName:  r.FirstName,
+		LastName:   r.LastName,
+		Role:       defaultUserRole,
+	}
+	u.Password = s.hashAndSalt(r.Password)
+
+	err := s.repo.CreateUser(&u)
 	if err != nil {
-		return nil, errors.Wrap(err, "error on login user")
+		s.log.Error().Err(err)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
-		return nil, errors.New("Invalid login credentials. Please try again")
-	}
-	user.Password = ""
-
-	return user, nil
+	return u.ID, err
 }
 
-func (s *service) Create(user *models.User) (*models.User, error) {
-	user.Password = hashAndSalt(user.RawPassword)
-	user.RawPassword = ""
-
-	u, err := s.repo.CreateUser(user)
+func (s *service) UserByEmailAndPassword(email, password string) (*User, error) {
+	u, err := s.repo.UserByEmail(email)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating user")
+		return nil, err
+	}
+
+	if u == nil {
+		return nil, errUserNotFound
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil && err == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
+		return nil, errInvalidCredentials
 	}
 
 	return u, nil
 }
 
-func hashAndSalt(pwd string) string {
+func (s *service) hashAndSalt(pwd string) string {
 	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.MinCost)
 	if err != nil {
-		log.Println(err)
+		s.log.Error().Err(err)
 	}
 	return string(hash)
 }
