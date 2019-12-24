@@ -1,0 +1,55 @@
+SHELL=/bin/sh
+IMAGE_TAG := $(shell git rev-parse HEAD)
+
+export REPO=dinastia-backend
+export GO111MODULE=on
+export GOPRIVATE=github.com/dynastiateam/*
+export GO_BUILD_VERSION=local
+export GO_BUILD_BRANCH=$(shell git branch | grep \* | cut -d ' ' -f2)
+export GO_BUILD_COMMIT=$(shell git rev-parse HEAD)
+
+.PHONY: ci
+ci: deps sec lint test
+
+.PHONY: deps
+deps:
+	rm -rf vendor
+	go mod download
+	go mod vendor
+	go mod tidy
+
+.PHONY: sec
+sec: deps
+	rm -rf Gopkg*
+	GO111MODULE=off go get -u github.com/golang/dep
+	${GOPATH}/bin/dep init
+	rm -rf _vendor*
+
+.PHONY: dockerise
+dockerise:
+	docker build \
+	--build-arg VERSION=${GO_BUILD_VERSION} \
+	--build-arg BRANCH=${GO_BUILD_BRANCH} \
+	--build-arg COMMIT=${GO_BUILD_COMMIT} \
+	--build-arg REPO=${REPO} \
+	-t ${REPO} .
+
+.PHONY: lint
+lint:
+	GO111MODULE=off go get github.com/golangci/golangci-lint/cmd/golangci-lint
+	golangci-lint run
+
+.PHONY: test
+test:
+	go test -v -mod=vendor -cover ./... -count=1
+
+.PHONY: cover
+cover:
+	GO111MODULE=off go get github.com/axw/gocov/gocov
+	GO111MODULE=off go get -u gopkg.in/matm/v1/gocov-html
+	${GOPATH}/bin/gocov test -mod=vendor ./... | ${GOPATH}/bin/gocov-html > coverage.html
+	open coverage.html
+
+.PHONY: run
+run:
+	cd cmd && go run main.go
