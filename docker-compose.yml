@@ -1,0 +1,68 @@
+version: '2.1'
+
+services:
+  authservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - REPO=auth
+    environment:
+      - LOG_VERBOSE=true
+      - HTTP_PORT=9002
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_HOST=dyndb
+      - DB_PORT=5432
+      - DB_SCHEMA=postgres
+      - DB_SSL=disable
+      - JWT_SECRET=!covabunga!
+      - USER_SERVICE_HOST=http://userservice:9001
+    expose:
+      - 9002
+    ports:
+      - 9002:9002
+    depends_on:
+      dyndb:
+        condition: service_healthy
+  userservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - REPO=users
+    environment:
+      - LOG_VERBOSE=true
+      - HTTP_PORT=9001
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_HOST=dyndb
+      - DB_PORT=5432
+      - DB_SCHEMA=postgres
+      - DB_SSL=disable
+    expose:
+      - 9001
+    ports:
+      - 9001:9001
+    depends_on:
+      dyndb:
+        condition: service_healthy
+  dyndb:
+    image: postgres:10.2
+    command: postgres -c log_statement=all
+    volumes:
+      - "./schema.sql:/docker-entrypoint-initdb.d/1-schema.sql"
+      - "./.data/db:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+    expose:
+      - 5432
+    ports:
+      - 54322:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

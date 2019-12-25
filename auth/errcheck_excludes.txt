@@ -1,0 +1,6 @@
+(io.Closer).Close
+(*net/http.Response).Close
+strings.Builder.WriteString(s string)
+(*encoding/json.Encoder).Encode
+(net/http.ResponseWriter).Write
+io.Copy
