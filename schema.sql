@@ -27,7 +27,7 @@ alter table users
 create index if not exists user_email_index
     on users (email);
 
-create table user_roles
+create table if not exists user_roles
 (
     id     serial
         constraint user_roles_pk
